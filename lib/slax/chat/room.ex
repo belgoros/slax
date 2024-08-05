@@ -1,4 +1,6 @@
 defmodule Slax.Chat.Room do
+  @moduledoc false
+
   use Ecto.Schema
   import Ecto.Changeset
 

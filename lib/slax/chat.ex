@@ -1,4 +1,6 @@
 defmodule Slax.Chat do
+  @moduledoc false
+
   alias Slax.Chat.Room
   alias Slax.Repo
 
