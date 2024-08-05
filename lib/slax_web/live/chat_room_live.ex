@@ -20,7 +20,7 @@ defmodule SlaxWeb.ChatRoomLive do
           Chat.get_first_room!()
       end
 
-    {:noreply, assign(socket, hide_topic?: false, room: room)}
+    {:noreply, assign(socket, hide_topic?: false, room: room, page_title: "#" <> room.name)}
   end
 
   def render(assigns) do
