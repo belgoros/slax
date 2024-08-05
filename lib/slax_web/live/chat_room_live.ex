@@ -49,6 +49,12 @@ defmodule SlaxWeb.ChatRoomLive do
             <h1 class="text-sm font-bold leading-none">
               #<%= @room.name %>
             </h1>
+            <.link
+              class="text-xs font-normal text-blue-600 hover:text-blue-700"
+              navigate={~p"/rooms/#{@room}/edit"}
+            >
+              Edit
+            </.link>
             <div class="text-xs leading-none h-3.5" phx-click="toggle-topic">
               <%= if @hide_topic? do %>
                 <span class="text-slate-600">[Topic hidden]</span>
