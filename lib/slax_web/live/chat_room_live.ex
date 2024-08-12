@@ -122,7 +122,7 @@ defmodule SlaxWeb.ChatRoomLive do
             <% end %>
           </ul>
         </div>
-        <div id="room-messages" class="flex flex-col flex-grow overflow-auto" phx-update="stream">
+        <div id="room-messages" class="flex flex-col flex-grow overflow-auto" phx-update="stream" phx-hook="RoomMessages">
           <.message
             :for={{dom_id, message} <- @streams.messages}
             current_user={@current_user}
