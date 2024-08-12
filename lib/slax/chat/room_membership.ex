@@ -1,11 +1,14 @@
 defmodule Slax.Chat.RoomMembership do
+  @moduledoc false
   use Ecto.Schema
   import Ecto.Changeset
 
-  schema "room_memberships" do
+  alias Slax.Accounts.User
+  alias Slax.Chat.Room
 
-    field :user_id, :id
-    field :room_id, :id
+  schema "room_memberships" do
+    belongs_to :room, Room
+    belongs_to :user, User
 
     timestamps(type: :utc_datetime)
   end

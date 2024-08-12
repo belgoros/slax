@@ -1,7 +1,7 @@
 defmodule Slax.Chat do
   @moduledoc false
 
-  alias Slax.Chat.{Message, Room}
+  alias Slax.Chat.{Message, Room, RoomMembership}
   alias Slax.Repo
   alias Slax.Accounts.User
 
@@ -75,4 +75,8 @@ defmodule Slax.Chat do
   end
 
   defp topic(room_id), do: "chat_room:#{room_id}"
+
+  def join_room!(room, user) do
+    Repo.insert!(%RoomMembership{room: room, user: user})
+  end
 end
