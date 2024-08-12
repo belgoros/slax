@@ -150,6 +150,7 @@ defmodule SlaxWeb.ChatRoomLive do
               cols=""
               id="chat-message-textarea"
               name={@new_message_form[:body].name}
+              phx-hook="ChatMessageTextarea"
               placeholder={"Message ##{@room.name}"}
               phx-debounce
               rows="1"
