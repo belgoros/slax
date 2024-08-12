@@ -25,4 +25,8 @@ defmodule SlaxWeb.OnlineUsers do
   def online?(online_users, user_id) do
     Map.get(online_users, user_id, 0) > 0
   end
+
+  def subscribe() do
+    Phoenix.PubSub.subscribe(Slax.PubSub, @topic)
+  end
 end

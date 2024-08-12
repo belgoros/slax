@@ -17,6 +17,8 @@ defmodule SlaxWeb.ChatRoomLive do
       OnlineUsers.track(self(), socket.assigns.current_user)
     end
 
+    OnlineUsers.subscribe()
+
     socket =
       socket
       |> assign(rooms: rooms, timezone: timezone, users: users)
