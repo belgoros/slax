@@ -313,6 +313,12 @@ defmodule SlaxWeb.ChatRoomLive do
     {:noreply, stream_delete(socket, :messages, message)}
   end
 
+  def handle_info(%{event: "presence_diff", payload: diff}, socket) do
+    online_users = OnlineUsers.update(socket.assigns.online_users, diff)
+
+    {:noreply, assign(socket, online_users: online_users)}
+  end
+
   defp assign_message_form(socket, changeset) do
     assign(socket, :new_message_form, to_form(changeset))
   end
