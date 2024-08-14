@@ -57,155 +57,153 @@ defmodule SlaxWeb.ChatRoomLive do
 
   def render(assigns) do
     ~H"""
-    <div class="flex flex-row">
-      <div class="flex flex-col flex-shrink-0 w-64 bg-slate-100">
-        <div class="flex items-center justify-between flex-shrink-0 h-16 px-4 border-b border-slate-300">
-          <div class="flex flex-col gap-1.5">
-            <h1 class="text-lg font-bold text-gray-800">
-              Slax
-            </h1>
-          </div>
+    <div class="flex flex-col flex-shrink-0 w-64 bg-slate-100">
+      <div class="flex items-center justify-between flex-shrink-0 h-16 px-4 border-b border-slate-300">
+        <div class="flex flex-col gap-1.5">
+          <h1 class="text-lg font-bold text-gray-800">
+            Slax
+          </h1>
         </div>
-        <div class="mt-4 overflow-auto">
-          <div class="flex items-center h-8 px-3 group">
-            <span class="ml-2 text-sm font-medium leading-none">Rooms</span>
-          </div>
-          <div id="rooms-list">
-            <.room_link :for={room <- @rooms} room={room} active={room.id == @room.id} />
-            <button class="relative flex items-center w-full h-8 pl-8 pr-3 text-sm cursor-pointer group hover:bg-slate-300">
-              <.icon name="hero-plus" class="relative w-4 h-4 top-px" />
-              <span class="ml-2 leading-none">Add rooms</span>
-              <div class="absolute hidden py-3 bg-white border rounded-lg cursor-default group-focus:block top-8 right-2 border-slate-200">
-                <div class="w-full text-left">
-                  <div class="hover:bg-sky-600">
-                    <div
-                      phx-click={JS.navigate(~p"/rooms")}
-                      class="px-6 py-1 text-gray-800 cursor-pointer whitespace-nowrap hover:text-white"
-                    >
-                      Browse rooms
-                    </div>
+      </div>
+      <div class="mt-4 overflow-auto">
+        <div class="flex items-center h-8 px-3 group">
+          <span class="ml-2 text-sm font-medium leading-none">Rooms</span>
+        </div>
+        <div id="rooms-list">
+          <.room_link :for={room <- @rooms} room={room} active={room.id == @room.id} />
+          <button class="relative flex items-center w-full h-8 pl-8 pr-3 text-sm cursor-pointer group hover:bg-slate-300">
+            <.icon name="hero-plus" class="relative w-4 h-4 top-px" />
+            <span class="ml-2 leading-none">Add rooms</span>
+            <div class="absolute hidden py-3 bg-white border rounded-lg cursor-default group-focus:block top-8 right-2 border-slate-200">
+              <div class="w-full text-left">
+                <div class="hover:bg-sky-600">
+                  <div
+                    phx-click={JS.navigate(~p"/rooms")}
+                    class="px-6 py-1 text-gray-800 cursor-pointer whitespace-nowrap hover:text-white"
+                  >
+                    Browse rooms
                   </div>
                 </div>
               </div>
-            </button>
+            </div>
+          </button>
+        </div>
+        <div class="mt-4">
+          <div class="flex items-center h-8 px-3 group">
+            <div class="flex items-center flex-grow focus:outline-none">
+              <span class="ml-2 text-sm font-medium leading-none">Users</span>
+            </div>
           </div>
-          <div class="mt-4">
-            <div class="flex items-center h-8 px-3 group">
-              <div class="flex items-center flex-grow focus:outline-none">
-                <span class="ml-2 text-sm font-medium leading-none">Users</span>
-              </div>
-            </div>
-            <div id="users-list">
-              <.user
-                :for={user <- @users}
-                user={user}
-                online={OnlineUsers.online?(@online_users, user.id)}
-              />
-            </div>
+          <div id="users-list">
+            <.user
+              :for={user <- @users}
+              user={user}
+              online={OnlineUsers.online?(@online_users, user.id)}
+            />
           </div>
         </div>
       </div>
-      <div class="flex flex-col flex-grow shadow-lg">
-        <div class="flex items-center justify-between flex-shrink-0 h-16 px-4 bg-white border-b border-slate-300">
-          <div class="flex flex-col gap-1.5">
-            <h1 class="text-sm font-bold leading-none">
-              #<%= @room.name %>
-            </h1>
-            <.link
-              class="text-xs font-normal text-blue-600 hover:text-blue-700"
-              navigate={~p"/rooms/#{@room}/edit"}
-            >
-              Edit
-            </.link>
-            <div class="text-xs leading-none h-3.5" phx-click="toggle-topic">
-              <%= if @hide_topic? do %>
-                <span class="text-slate-600">[Topic hidden]</span>
-              <% else %>
-                <%= @room.topic %>
-              <% end %>
-            </div>
-          </div>
-          <ul class="relative z-10 flex items-center justify-end gap-4 px-4 sm:px-6 lg:px-8">
-            <%= if @current_user do %>
-              <li class="text-[0.8125rem] leading-6 text-zinc-900">
-                <%= username(@current_user) %>
-              </li>
-              <li>
-                <.link
-                  href={~p"/users/settings"}
-                  class="text-[0.8125rem] leading-6 text-zinc-900 font-semibold hover:text-zinc-700"
-                >
-                  Settings
-                </.link>
-              </li>
-              <li>
-                <.link
-                  href={~p"/users/log_out"}
-                  method="delete"
-                  class="text-[0.8125rem] leading-6 text-zinc-900 font-semibold hover:text-zinc-700"
-                >
-                  Log out
-                </.link>
-              </li>
-            <% else %>
-              <li>
-                <.link
-                  href={~p"/users/register"}
-                  class="text-[0.8125rem] leading-6 text-zinc-900 font-semibold hover:text-zinc-700"
-                >
-                  Register
-                </.link>
-              </li>
-              <li>
-                <.link
-                  href={~p"/users/log_in"}
-                  class="text-[0.8125rem] leading-6 text-zinc-900 font-semibold hover:text-zinc-700"
-                >
-                  Log in
-                </.link>
-              </li>
-            <% end %>
-          </ul>
-        </div>
-        <div
-          id="room-messages"
-          class="flex flex-col flex-grow overflow-auto"
-          phx-update="stream"
-          phx-hook="RoomMessages"
-        >
-          <.message
-            :for={{dom_id, message} <- @streams.messages}
-            current_user={@current_user}
-            dom_id={dom_id}
-            message={message}
-            timezone={@timezone}
-          />
-        </div>
-        <div class="h-12 px-4 pb-4 bg-white">
-          <.form
-            id="new-message-form"
-            for={@new_message_form}
-            phx-change="validate-message"
-            phx-submit="submit-message"
-            class="flex items-center p-1 border-2 rounded-sm border-slate-300"
+    </div>
+    <div class="flex flex-col flex-grow shadow-lg">
+      <div class="flex items-center justify-between flex-shrink-0 h-16 px-4 bg-white border-b border-slate-300">
+        <div class="flex flex-col gap-1.5">
+          <h1 class="text-sm font-bold leading-none">
+            #<%= @room.name %>
+          </h1>
+          <.link
+            class="text-xs font-normal text-blue-600 hover:text-blue-700"
+            navigate={~p"/rooms/#{@room}/edit"}
           >
-            <textarea
-              class="flex-grow px-3 mx-1 text-sm border-l resize-none border-slate-300"
-              cols=""
-              id="chat-message-textarea"
-              name={@new_message_form[:body].name}
-              phx-hook="ChatMessageTextarea"
-              placeholder={"Message ##{@room.name}"}
-              phx-debounce
-              rows="1"
-            >
+            Edit
+          </.link>
+          <div class="text-xs leading-none h-3.5" phx-click="toggle-topic">
+            <%= if @hide_topic? do %>
+              <span class="text-slate-600">[Topic hidden]</span>
+            <% else %>
+              <%= @room.topic %>
+            <% end %>
+          </div>
+        </div>
+        <ul class="relative z-10 flex items-center justify-end gap-4 px-4 sm:px-6 lg:px-8">
+          <%= if @current_user do %>
+            <li class="text-[0.8125rem] leading-6 text-zinc-900">
+              <%= username(@current_user) %>
+            </li>
+            <li>
+              <.link
+                href={~p"/users/settings"}
+                class="text-[0.8125rem] leading-6 text-zinc-900 font-semibold hover:text-zinc-700"
+              >
+                Settings
+              </.link>
+            </li>
+            <li>
+              <.link
+                href={~p"/users/log_out"}
+                method="delete"
+                class="text-[0.8125rem] leading-6 text-zinc-900 font-semibold hover:text-zinc-700"
+              >
+                Log out
+              </.link>
+            </li>
+          <% else %>
+            <li>
+              <.link
+                href={~p"/users/register"}
+                class="text-[0.8125rem] leading-6 text-zinc-900 font-semibold hover:text-zinc-700"
+              >
+                Register
+              </.link>
+            </li>
+            <li>
+              <.link
+                href={~p"/users/log_in"}
+                class="text-[0.8125rem] leading-6 text-zinc-900 font-semibold hover:text-zinc-700"
+              >
+                Log in
+              </.link>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+      <div
+        id="room-messages"
+        class="flex flex-col flex-grow overflow-auto"
+        phx-update="stream"
+        phx-hook="RoomMessages"
+      >
+        <.message
+          :for={{dom_id, message} <- @streams.messages}
+          current_user={@current_user}
+          dom_id={dom_id}
+          message={message}
+          timezone={@timezone}
+        />
+      </div>
+      <div class="h-12 px-4 pb-4 bg-white">
+        <.form
+          id="new-message-form"
+          for={@new_message_form}
+          phx-change="validate-message"
+          phx-submit="submit-message"
+          class="flex items-center p-1 border-2 rounded-sm border-slate-300"
+        >
+          <textarea
+            class="flex-grow px-3 mx-1 text-sm border-l resize-none border-slate-300"
+            cols=""
+            id="chat-message-textarea"
+            name={@new_message_form[:body].name}
+            phx-hook="ChatMessageTextarea"
+            placeholder={"Message ##{@room.name}"}
+            phx-debounce
+            rows="1"
+          >
         <%= Phoenix.HTML.Form.normalize_value("textarea", @new_message_form[:body].value) %>
         </textarea>
-            <button class="flex items-center justify-center flex-shrink w-6 h-6 rounded hover:bg-slate-200">
-              <.icon name="hero-paper-airplane" class="w-4 h-4" />
-            </button>
-          </.form>
-        </div>
+          <button class="flex items-center justify-center flex-shrink w-6 h-6 rounded hover:bg-slate-200">
+            <.icon name="hero-paper-airplane" class="w-4 h-4" />
+          </button>
+        </.form>
       </div>
     </div>
     """
