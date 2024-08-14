@@ -36,6 +36,17 @@ defmodule SlaxWeb.ChatRoomLive.Index do
                 <% end %>
               </div>
             </div>
+            <button
+              class="opacity-0 group-hover:opacity-100 bg-white hover:bg-gray-100 border border-gray-400 text-gray-700 px-3 py-1.5 w-24 rounded-sm font-bold"
+              phx-click="toggle-room-membership"
+              phx-value-id={room.id}
+            >
+              <%= if joined? do %>
+                Leave
+              <% else %>
+                Join
+              <% end %>
+            </button>
           </div>
         </div>
       </div>
@@ -45,11 +56,22 @@ defmodule SlaxWeb.ChatRoomLive.Index do
 
   def mount(_params, _session, socket) do
     rooms = Chat.list_rooms_with_joined(socket.assigns.current_user)
+
     socket =
       socket
       |> assign(:page_title, "All rooms")
       |> stream_configure(:rooms, dom_id: fn {room, _} -> "rooms-#{room.id}" end)
       |> stream(:rooms, rooms)
+
     {:ok, socket}
+  end
+
+  def handle_event("toggle-room-membership", %{"id" => id}, socket) do
+    {room, joined?} =
+      id
+      |> Chat.get_room!()
+      |> Chat.toggle_room_membership(socket.assigns.current_user)
+
+    {:noreply, stream_insert(socket, :rooms, {room, joined?})}
   end
 end
