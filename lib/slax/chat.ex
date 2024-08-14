@@ -86,4 +86,10 @@ defmodule Slax.Chat do
     |> Map.fetch!(:rooms)
     |> Enum.sort_by(& &1.name)
   end
+
+  def joined?(%Room{} = room, %User{} = user) do
+    Repo.exists?(
+      from rm in RoomMembership, where: rm.room_id == ^room.id and rm.user_id == ^user.id
+    )
+  end
 end
