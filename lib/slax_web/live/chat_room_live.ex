@@ -41,6 +41,8 @@ defmodule SlaxWeb.ChatRoomLive do
 
     messages = Chat.list_messages_in_room(room)
 
+    Chat.update_last_read_id(room, socket.assigns.current_user)
+
     Chat.subscribe_to_room(room)
 
     {:noreply,
