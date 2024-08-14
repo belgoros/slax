@@ -112,6 +112,7 @@ defmodule SlaxWeb.ChatRoomLive do
             #<%= @room.name %>
           </h1>
           <.link
+            :if={@joined?}
             class="text-xs font-normal text-blue-600 hover:text-blue-700"
             navigate={~p"/rooms/#{@room}/edit"}
           >
