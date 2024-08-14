@@ -206,6 +206,34 @@ defmodule SlaxWeb.ChatRoomLive do
           </button>
         </.form>
       </div>
+      <div
+        :if={!@joined?}
+        class="flex justify-around p-6 mx-5 mb-5 border rounded-lg bg-slate-100 border-slate-300"
+      >
+        <div class="text-center max-w-3-xl">
+          <div class="mb-4">
+            <h1 class="text-xl font-semibold">#<%= @room.name %></h1>
+            <p :if={@room.topic} class="mt-1 text-sm text-gray-600"><%= @room.topic %></p>
+          </div>
+          <div class="flex items-center justify-around">
+            <button
+              phx-click="join-room"
+              class="px-4 py-2 text-white bg-green-600 rounded hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500"
+            >
+              Join Room
+            </button>
+          </div>
+          <div class="mt-4">
+            <.link
+              navigate={~p"/rooms"}
+              href="#"
+              class="text-sm underline text-slate-500 hover:text-slate-600"
+            >
+              Back to All Rooms
+            </.link>
+          </div>
+        </div>
+      </div>
     </div>
     """
   end
@@ -316,6 +344,14 @@ defmodule SlaxWeb.ChatRoomLive do
 
   def handle_event("delete-message", %{"id" => id}, socket) do
     Chat.delete_message_by_id(id, socket.assigns.current_user)
+    {:noreply, socket}
+  end
+
+  def handle_event("join-room", _, socket) do
+    current_user = socket.assigns.current_user
+    Chat.join_room!(socket.assigns.room, current_user)
+    Chat.subscribe_to_room(socket.assigns.room)
+    socket = assign(socket, joined?: true, rooms: Chat.list_joined_rooms(current_user))
     {:noreply, socket}
   end
 
