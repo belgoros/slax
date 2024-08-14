@@ -121,6 +121,16 @@ defmodule Slax.Chat do
     Repo.get_by(RoomMembership, room_id: room.id, user_id: user.id)
   end
 
+  def get_last_read_id(%Room{} = room, user) do
+    case get_membership(room, user) do
+      %RoomMembership{} = membership ->
+        membership.last_read_id
+
+      nil ->
+        nil
+    end
+  end
+
   def update_last_read_id(room, user) do
     case get_membership(room, user) do
       %RoomMembership{} = membership ->
