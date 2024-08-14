@@ -5,6 +5,7 @@ defmodule Slax.Chat do
   alias Slax.Repo
   alias Slax.Accounts.User
 
+  import Ecto.Changeset
   import Ecto.Query
 
   @pubsub Slax.PubSub
@@ -113,6 +114,22 @@ defmodule Slax.Chat do
       nil ->
         join_room!(room, user)
         {room, true}
+    end
+  end
+
+  def update_last_read_id(room, user) do
+    case Repo.get_by(RoomMembership, room_id: room.id, user_id: user.id) do
+      %RoomMembership{} = membership ->
+        id =
+          from(m in Message, where: m.room_id == ^room.id, select: max(m.id))
+          |> Repo.one()
+
+        membership
+        |> change(%{last_read_id: id})
+        |> Repo.update()
+
+      nil ->
+        nil
     end
   end
 end
