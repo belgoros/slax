@@ -8,7 +8,7 @@ defmodule SlaxWeb.ChatRoomLive do
   alias SlaxWeb.OnlineUsers
 
   def mount(_params, _session, socket) do
-    rooms = Chat.list_rooms()
+    rooms = Chat.list_joined_rooms(socket.assigns.current_user)
     users = Accounts.list_users()
 
     timezone = get_connect_params(socket)["timezone"]
