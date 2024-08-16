@@ -116,7 +116,7 @@ defmodule SlaxWeb.ChatRoomLive do
                 <div class="hover:bg-sky-600">
                   <div
                     class="block px-6 py-1 text-gray-800 cursor-pointer whitespace-nowrap hover:text-white"
-                    phx-click={show_modal("new-room-modal")}
+                    phx-click={JS.navigate(~p"/rooms/#{@room}/new") |> show_modal("new-room-modal")}
                   >
                     Create a new room
                   </div>
@@ -288,7 +288,11 @@ defmodule SlaxWeb.ChatRoomLive do
         </div>
       </div>
     </div>
-    <.modal id="new-room-modal">
+    <.modal
+      id="new-room-modal"
+      show={@live_action == :new}
+      on_cancel={JS.navigate(~p"/rooms/#{@room}")}
+    >
       <.header>New chat room</.header>
       <.simple_form
         for={@new_room_form}
