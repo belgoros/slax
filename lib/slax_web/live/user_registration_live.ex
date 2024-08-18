@@ -6,7 +6,7 @@ defmodule SlaxWeb.UserRegistrationLive do
 
   def render(assigns) do
     ~H"""
-    <div class="mx-auto max-w-sm">
+    <div class="mx-auto mt-16 w-96">
       <.header class="text-center">
         Register for an account
         <:subtitle>
