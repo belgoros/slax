@@ -5,7 +5,7 @@ defmodule SlaxWeb.UserConfirmationLive do
 
   def render(%{live_action: :edit} = assigns) do
     ~H"""
-    <div class="mx-auto max-w-sm">
+    <div class="mx-auto mt-16 w-96">
       <.header class="text-center">Confirm Account</.header>
 
       <.simple_form for={@form} id="confirmation_form" phx-submit="confirm_account">
@@ -15,7 +15,7 @@ defmodule SlaxWeb.UserConfirmationLive do
         </:actions>
       </.simple_form>
 
-      <p class="text-center mt-4">
+      <p class="mt-4 text-center">
         <.link href={~p"/users/register"}>Register</.link>
         | <.link href={~p"/users/log_in"}>Log in</.link>
       </p>
