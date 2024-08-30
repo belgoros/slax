@@ -77,6 +77,8 @@ defmodule SlaxWeb.Router do
   scope "/", SlaxWeb do
     pipe_through [:browser]
 
+    get "/home", PageController, :home
+
     delete "/users/log_out", UserSessionController, :delete
 
     live_session :current_user,
