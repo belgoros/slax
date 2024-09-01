@@ -6,8 +6,14 @@ defmodule SlaxWeb.ChatRoomLive.Index do
   def render(assigns) do
     ~H"""
     <main class="flex-1 max-w-4xl p-6 mx-auto">
-      <div class="mb-4">
+      <div class="flex items-center justify-between mb-4">
         <h1 class="text-xl font-semibold"><%= @page_title %></h1>
+        <button
+          phx-click={show_modal("new-room-modal")}
+          class="px-4 py-2 font-semibold bg-white border rounded shadow-sm border-slate-400"
+        >
+          Create room
+        </button>
       </div>
       <div class="border rounded bg-slate-50">
         <div id="rooms" class="divide-y" phx-update="stream">
@@ -51,6 +57,11 @@ defmodule SlaxWeb.ChatRoomLive.Index do
         </div>
       </div>
     </main>
+    <.modal id="new-room-modal">
+      <.header>New chat room</.header>
+
+      <.live_component module={SlaxWeb.ChatRoomLive.FormComponent} id="new-room-form-component" />
+    </.modal>
     """
   end
 
