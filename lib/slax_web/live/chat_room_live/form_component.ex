@@ -9,7 +9,7 @@ defmodule SlaxWeb.ChatRoomLive.FormComponent do
   def render(assigns) do
     ~H"""
     <div id="new-room-form">
-      <.room_form form={@form} />
+      <.room_form form={@form} target={@myself} />
     </div>
     """
   end
@@ -24,5 +24,16 @@ defmodule SlaxWeb.ChatRoomLive.FormComponent do
 
   defp assign_form(socket, changeset) do
     assign(socket, :form, to_form(changeset))
+  end
+
+  def handle_event("validate-room", %{"room" => room_params}, socket) do
+    changeset =
+      %Room{}
+      |> Chat.change_room(room_params)
+      |> Map.put(:action, :validate)
+
+    socket
+    |> assign_form(changeset)
+    |> noreply()
   end
 end
