@@ -5,6 +5,7 @@ defmodule SlaxWeb.UserSessionController do
   alias SlaxWeb.UserAuth
 
   def create(conn, %{"_action" => "registered"} = params) do
+    params = put_in(params, ["user", "email_or_username"], params["user"]["email"])
     create(conn, params, "Account created successfully!")
   end
 
