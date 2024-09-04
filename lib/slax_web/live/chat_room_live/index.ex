@@ -60,7 +60,11 @@ defmodule SlaxWeb.ChatRoomLive.Index do
     <.modal id="new-room-modal">
       <.header>New chat room</.header>
 
-      <.live_component module={SlaxWeb.ChatRoomLive.FormComponent} id="new-room-form-component" />
+      <.live_component
+        module={SlaxWeb.ChatRoomLive.FormComponent}
+        id="new-room-form-component"
+        current_user={@current_user}
+      />
     </.modal>
     """
   end
