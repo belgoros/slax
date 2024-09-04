@@ -187,45 +187,27 @@ defmodule SlaxWeb.ChatRoomLive do
           </div>
         </div>
         <ul class="relative z-10 flex items-center justify-end gap-4 px-4 sm:px-6 lg:px-8">
-          <%= if @current_user do %>
-            <li class="text-[0.8125rem] leading-6 text-zinc-900">
-              <%= @current_user.username %>
-            </li>
-            <li>
+          <li class="text-[0.8125rem] leading-6 text-zinc-900">
+            <div class="text-sm leading-10">
               <.link
-                href={~p"/users/settings"}
-                class="text-[0.8125rem] leading-6 text-zinc-900 font-semibold hover:text-zinc-700"
+                class="flex items-center gap-4"
+                phx-click="show-profile"
+                phx-value-user-id={@current_user.id}
               >
-                Settings
+                <img src={~p"/images/one_ring.jpg"} class="w-8 h-8 rounded" />
+                <span class="hover:underline"><%= @current_user.username %></span>
               </.link>
-            </li>
-            <li>
-              <.link
-                href={~p"/users/log_out"}
-                method="delete"
-                class="text-[0.8125rem] leading-6 text-zinc-900 font-semibold hover:text-zinc-700"
-              >
-                Log out
-              </.link>
-            </li>
-          <% else %>
-            <li>
-              <.link
-                href={~p"/users/register"}
-                class="text-[0.8125rem] leading-6 text-zinc-900 font-semibold hover:text-zinc-700"
-              >
-                Register
-              </.link>
-            </li>
-            <li>
-              <.link
-                href={~p"/users/log_in"}
-                class="text-[0.8125rem] leading-6 text-zinc-900 font-semibold hover:text-zinc-700"
-              >
-                Log in
-              </.link>
-            </li>
-          <% end %>
+            </div>
+          </li>
+          <li>
+            <.link
+              href={~p"/users/log_out"}
+              method="delete"
+              class="text-[0.8125rem] leading-6 text-zinc-900 font-semibold hover:text-zinc-700"
+            >
+              Log out
+            </.link>
+          </li>
         </ul>
       </div>
       <div
@@ -312,6 +294,9 @@ defmodule SlaxWeb.ChatRoomLive do
         </div>
       </div>
     </div>
+    <%= if assigns[:profile] do %>
+      <.live_component id="profile" module={SlaxWeb.ChatRoomLive.ProfileComponent} user={@profile} />
+    <% end %>
     <.modal
       id="new-room-modal"
       show={@live_action == :new}
@@ -421,11 +406,20 @@ defmodule SlaxWeb.ChatRoomLive do
       >
         <.icon name="hero-trash" class="w-4 h-4" />
       </button>
-      <img class="flex-shrink-0 w-10 h-10 rounded" src={~p"/images/one_ring.jpg"} />
+      <img
+        class="w-10 h-10 rounded cursor-pointer"
+        phx-click="show-profile"
+        phx-value-user-id={@message.user.id}
+        src={~p"/images/one_ring.jpg"}
+      />
       <div class="ml-2">
         <div class="-mt-1">
-          <.link class="text-sm font-semibold hover:underline">
-            <span><%= @message.user.username %></span>
+          <.link
+            phx-click="show-profile"
+            phx-value-user-id={@message.user.id}
+            class="text-sm font-semibold hover:underline"
+          >
+            <%= @message.user.username %>
           </.link>
           <span :if={@timezone} class="ml-1 text-xs text-gray-500">
             <%= message_timestamp(@message, @timezone) %>
@@ -459,6 +453,11 @@ defmodule SlaxWeb.ChatRoomLive do
     """
   end
 
+  def handle_event("show-profile", %{"user-id" => user_id}, socket) do
+    user = Accounts.get_user!(user_id)
+    {:noreply, assign(socket, :profile, user)}
+  end
+
   def handle_event("toggle-topic", _params, socket) do
     {:noreply, update(socket, :hide_topic?, &(!&1))}
   end
@@ -467,6 +466,10 @@ defmodule SlaxWeb.ChatRoomLive do
     changeset = Chat.change_message(%Message{}, message_params)
 
     {:noreply, assign_message_form(socket, changeset)}
+  end
+
+  def handle_event("close-profile", _, socket) do
+    {:noreply, assign(socket, :profile, nil)}
   end
 
   def handle_event("submit-message", %{"message" => message_params}, socket) do
