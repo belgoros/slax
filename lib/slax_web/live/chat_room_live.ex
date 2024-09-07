@@ -7,6 +7,8 @@ defmodule SlaxWeb.ChatRoomLive do
   alias Slax.Accounts
   alias SlaxWeb.OnlineUsers
 
+  import SlaxWeb.UserComponents
+
   def mount(_params, _session, socket) do
     rooms = Chat.list_joined_rooms_with_unread_counts(socket.assigns.current_user)
     users = Accounts.list_users()
@@ -194,7 +196,7 @@ defmodule SlaxWeb.ChatRoomLive do
                 phx-click="show-profile"
                 phx-value-user-id={@current_user.id}
               >
-                <img src={~p"/images/one_ring.jpg"} class="w-8 h-8 rounded" />
+                <.user_avatar user={@current_user} class="w-8 h-8 rounded" />
                 <span class="hover:underline"><%= @current_user.username %></span>
               </.link>
             </div>
@@ -406,11 +408,11 @@ defmodule SlaxWeb.ChatRoomLive do
       >
         <.icon name="hero-trash" class="w-4 h-4" />
       </button>
-      <img
+      <.user_avatar
+        user={@message.user}
         class="w-10 h-10 rounded cursor-pointer"
         phx-click="show-profile"
         phx-value-user-id={@message.user.id}
-        src={user_avatar_path(@message.user)}
       />
       <div class="ml-2">
         <div class="-mt-1">
@@ -429,14 +431,6 @@ defmodule SlaxWeb.ChatRoomLive do
       </div>
     </div>
     """
-  end
-
-  defp user_avatar_path(user) do
-    if user.avatar_path do
-      ~p"/uploads/#{user.avatar_path}"
-    else
-      ~p"/images/one_ring.jpg"
-    end
   end
 
   attr :active, :boolean, required: true
