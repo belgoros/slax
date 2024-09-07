@@ -1,6 +1,17 @@
 defmodule SlaxWeb.ChatRoomLive.ProfileComponent do
   use SlaxWeb, :live_component
   import SlaxWeb.UserComponents
+  alias Slax.Accounts
+
+  def mount(socket) do
+    socket
+    |> allow_upload(:avatar,
+      accept: ~w(.png .jpg),
+      max_entries: 1,
+      max_file_size: 2 * 1024 * 1024
+    )
+    |> ok()
+  end
 
   def render(assigns) do
     ~H"""
@@ -20,7 +31,43 @@ defmodule SlaxWeb.ChatRoomLive.ProfileComponent do
       </div>
       <div class="flex flex-col flex-grow p-4 overflow-auto">
         <div class="mb-4">
-          <.user_avatar user={@user} class="w-48 mx-auto rounded" />
+          <%= if @current_user.id == @user.id do %>
+            <.form
+              for={%{}}
+              phx-change="validate-avatar"
+              phx-submit="submit-avatar"
+              phx-target={@myself}
+            >
+              <div class="mb-4">
+                <%= if Enum.any?(@uploads.avatar.entries) do %>
+                  <div class="w-48 mx-auto mb-2">
+                    <.live_img_preview
+                      entry={List.first(@uploads.avatar.entries)}
+                      class="rounded"
+                      width={192}
+                      height={192}
+                    />
+                    <button
+                      class="w-full py-1 mt-2 text-white rounded shadow bg-emerald-600 hover:bg-emerald-700"
+                      type="submit"
+                    >
+                      Save
+                    </button>
+                  </div>
+                <% else %>
+                  <.user_avatar user={@user} />
+                <% end %>
+              </div>
+              <label class="block mb-2 text-lg font-semibold text-gray-800">
+                Upload avatar
+              </label>
+              <.live_file_input upload={@uploads.avatar} class="w-full" />
+            </.form>
+
+            <hr class="mt-4" />
+          <% else %>
+            <.user_avatar user={@user} class="w-48 mx-auto rounded" />
+          <% end %>
         </div>
         <h2 class="text-xl font-bold text-gray-800">
           <%= @user.username %>
@@ -29,4 +76,25 @@ defmodule SlaxWeb.ChatRoomLive.ProfileComponent do
     </div>
     """
   end
+
+  def handle_event("submit-avatar", _, socket) do
+    if socket.assigns.user.id != socket.assigns.current_user.id do
+      raise "Prohibited"
+    end
+
+    avatar_path =
+      socket
+      |> consume_uploaded_entries(:avatar, fn %{path: path}, _entry ->
+        dest = Path.join("priv/static/uploads", Path.basename(path))
+        File.cp!(path, dest)
+        {:ok, Path.basename(dest)}
+      end)
+      |> List.first()
+
+    {:ok, _user} = Accounts.save_user_avatar_path(socket.assigns.current_user, avatar_path)
+
+    {:noreply, socket}
+  end
+
+  def handle_event("validate-avatar", _, socket), do: {:noreply, socket}
 end
