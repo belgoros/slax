@@ -3,13 +3,12 @@ defmodule SlaxWeb.ChatComponents do
   use SlaxWeb, :html
 
   alias Slax.Accounts.User
-  alias Slax.Chat.Message
 
   import SlaxWeb.UserComponents
 
   attr :current_user, User, required: true
   attr :dom_id, :string, required: true
-  attr :message, Message, required: true
+  attr :message, :any, required: true
   attr :in_thread?, :boolean, default: false
   attr :timezone, :string, required: true
 
@@ -58,9 +57,38 @@ defmodule SlaxWeb.ChatComponents do
             <%= message_timestamp(@message, @timezone) %>
           </span>
           <p class="text-sm"><%= @message.body %></p>
+          <div
+            :if={!@in_thread? && Enum.any?(@message.replies)}
+            class="box-border inline-flex items-center py-1 pr-2 mt-2 border border-transparent rounded cursor-pointer hover:border-slate-200 hover:bg-slate-50"
+            phx-click="show-thread"
+            phx-value-id={@message.id}
+          >
+            <.thread_avatars replies={@message.replies} />
+            <a class="inline-block ml-1 text-xs font-medium text-blue-600" href="#">
+              <%= length(@message.replies) %>
+              <%= if length(@message.replies) == 1 do %>
+                reply
+              <% else %>
+                replies
+              <% end %>
+            </a>
+          </div>
         </div>
       </div>
     </div>
+    """
+  end
+
+  defp thread_avatars(assigns) do
+    users =
+      assigns.replies
+      |> Enum.map(& &1.user)
+      |> Enum.uniq_by(& &1.id)
+
+    assigns = assign(assigns, :users, users)
+
+    ~H"""
+    <.user_avatar :for={user <- @users} class={["h-6 w-6 rounded flex-shrink-0 ml-1"]} user={user} />
     """
   end
 
