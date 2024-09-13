@@ -67,6 +67,7 @@ defmodule SlaxWeb.ChatRoomLive do
     |> stream(:messages, [], reset: true)
     |> stream_message_page(page)
     |> assign_message_form(Chat.change_message(%Message{}))
+    |> push_event("reset_pagination", %{can_load_more: !is_nil(page.metadata.after)})
     |> push_event("scroll_messages_to_bottom", %{})
     |> update(:rooms, fn rooms ->
       room_id = room.id
@@ -214,15 +215,6 @@ defmodule SlaxWeb.ChatRoomLive do
             </.link>
           </li>
         </ul>
-      </div>
-      <div :if={@message_cursor} class="flex justify-around my-2">
-        <button
-          id="load-more-button"
-          phx-click="load-more-messages"
-          class="px-3 py-1 border border-green-200 rounded bg-green-50"
-        >
-          Load more
-        </button>
       </div>
       <div
         id="room-messages"
@@ -525,7 +517,7 @@ defmodule SlaxWeb.ChatRoomLive do
 
     socket
     |> stream_message_page(page)
-    |> noreply()
+    |> reply(%{can_load_more: !is_nil(page.metadata.after)})
   end
 
   def handle_info({:new_message, message}, socket) do
