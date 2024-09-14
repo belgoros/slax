@@ -3,7 +3,7 @@ defmodule Slax.Accounts.User do
   use Ecto.Schema
   import Ecto.Changeset
 
-  alias Slax.Chat.{Room, RoomMembership}
+  alias Slax.Chat.{Reaction, Room, RoomMembership}
 
   schema "users" do
     field :email, :string
@@ -14,6 +14,7 @@ defmodule Slax.Accounts.User do
     field :confirmed_at, :utc_datetime
     field :avatar_path, :string
 
+    has_many :reactions, Reaction
     many_to_many :rooms, Room, join_through: RoomMembership
 
     timestamps(type: :utc_datetime)
