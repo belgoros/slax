@@ -130,30 +130,37 @@ defmodule SlaxWeb.ChatRoomLive do
             active={room.id == @room.id}
             unread_count={unread_count}
           />
-          <button class="relative flex items-center w-full h-8 pl-8 pr-3 text-sm cursor-pointer group hover:bg-slate-300">
-            <.icon name="hero-plus" class="relative w-4 h-4 top-px" />
-            <span class="ml-2 leading-none">Add rooms</span>
-            <div class="absolute hidden py-3 bg-white border rounded-lg cursor-default group-focus:block top-8 right-2 border-slate-200">
+
+          <div class="relative">
+            <button
+              class="flex items-center w-full h-8 pl-8 pr-3 text-sm cursor-pointer peer hover:bg-slate-300"
+              phx-click={JS.toggle(to: "#sidebar-rooms-menu")}
+            >
+              <.icon name="hero-plus" class="relative w-4 h-4 top-px" />
+              <span class="ml-2 leading-none">Add rooms</span>
+            </button>
+
+            <div
+              id="sidebar-rooms-menu"
+              class="absolute hidden py-3 bg-white border rounded-lg cursor-default top-8 right-2 border-slate-200"
+              phx-click-away={JS.hide()}
+            >
               <div class="w-full text-left">
-                <div class="hover:bg-sky-600">
-                  <div
-                    class="block px-6 py-1 text-gray-800 cursor-pointer whitespace-nowrap hover:text-white"
-                    phx-click={JS.navigate(~p"/rooms/#{@room}/new") |> show_modal("new-room-modal")}
-                  >
-                    Create a new room
-                  </div>
-                </div>
-                <div class="hover:bg-sky-600">
-                  <div
-                    phx-click={JS.navigate(~p"/rooms")}
-                    class="px-6 py-1 text-gray-800 cursor-pointer whitespace-nowrap hover:text-white"
-                  >
-                    Browse rooms
-                  </div>
-                </div>
+                <.link
+                  class="block px-6 py-1 text-gray-800 cursor-pointer select-none whitespace-nowrap hover:text-white hover:bg-sky-600"
+                  navigate={~p"/rooms"}
+                >
+                  Browse rooms
+                </.link>
+                <.link
+                  class="block px-6 py-1 text-gray-800 cursor-pointer select-none whitespace-nowrap hover:text-white hover:bg-sky-600"
+                  navigate={~p"/rooms/#{@room}/new"}
+                >
+                  Create a new room
+                </.link>
               </div>
             </div>
-          </button>
+          </div>
         </div>
         <div class="mt-4">
           <div class="flex items-center h-8 px-3 group">

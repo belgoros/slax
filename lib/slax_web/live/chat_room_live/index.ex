@@ -6,27 +6,29 @@ defmodule SlaxWeb.ChatRoomLive.Index do
   def render(assigns) do
     ~H"""
     <main class="flex-1 max-w-4xl p-6 mx-auto">
-      <div class="flex items-center justify-between mb-4">
-        <h1 class="text-xl font-semibold"><%= @page_title %></h1>
-        <button
-          phx-click={show_modal("new-room-modal")}
-          class="px-4 py-2 font-semibold bg-white border rounded shadow-sm border-slate-400"
-        >
-          Create room
-        </button>
+      <div class="mb-4">
+        <div class="flex items-center justify-between mb-4">
+          <h1 class="text-xl font-semibold"><%= @page_title %></h1>
+          <button
+            phx-click={show_modal("new-room-modal")}
+            class="px-4 py-2 font-semibold bg-white border rounded shadow-sm border-slate-400 hover:bg-gray-100"
+          >
+            Create room
+          </button>
+        </div>
       </div>
       <div class="border rounded bg-slate-50">
         <div id="rooms" class="divide-y" phx-update="stream">
-          <div
+          <.link
             :for={{id, {room, joined?}} <- @streams.rooms}
             class="flex items-center justify-between p-4 cursor-pointer group first:rounded-t last:rounded-b"
             id={id}
-            phx-click={JS.navigate(~p"/rooms/#{room}")}
+            navigate={~p"/rooms/#{room}"}
           >
             <div>
               <div class="mb-1 font-medium">
                 #<%= room.name %>
-                <span class="mx-1 text-sm font-light text-gray-500 opacity-0 group-hover:opacity-100">
+                <span class="hidden mx-1 text-sm font-light text-gray-500 group-hover:inline group-focus:inline">
                   View room
                 </span>
               </div>
@@ -42,6 +44,7 @@ defmodule SlaxWeb.ChatRoomLive.Index do
                 <% end %>
               </div>
             </div>
+
             <button
               class="opacity-0 group-hover:opacity-100 bg-white hover:bg-gray-100 border border-gray-400 text-gray-700 px-3 py-1.5 w-24 rounded-sm font-bold"
               phx-click="toggle-room-membership"
@@ -53,9 +56,10 @@ defmodule SlaxWeb.ChatRoomLive.Index do
                 Join
               <% end %>
             </button>
-          </div>
+          </.link>
         </div>
       </div>
+
       <div :if={@num_pages > 1} class="py-4">
         <nav class="flex justify-around">
           <ul class="flex items-center h-10 -space-x-px text-base">
@@ -92,6 +96,7 @@ defmodule SlaxWeb.ChatRoomLive.Index do
         </nav>
       </div>
     </main>
+
     <.modal id="new-room-modal">
       <.header>New chat room</.header>
 
